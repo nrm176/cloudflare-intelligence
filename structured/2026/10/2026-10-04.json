@@ -1,0 +1,142 @@
+{
+  "id": "cloudflare-brief-2026-10-04",
+  "date": "2026-10-04",
+  "coverage_window": {
+    "start": "2026-10-01",
+    "end": "2026-10-04"
+  },
+  "generated_at": "2026-10-04T14:00:00+09:00",
+  "language": "ja",
+  "source_count": 8,
+  "developments": [
+    {
+      "product": "AI Gateway",
+      "event": "Web Search API",
+      "event_type": "api_feature",
+      "summary": "Agent向けWeb検索APIが追加。",
+      "enterprise_implication": "外部Web検索をgateway配下の標準toolとして扱いやすい。",
+      "use_cases": [
+        "Agent外部情報検索"
+      ],
+      "technical_implications": [
+        "search/model gateway統合"
+      ],
+      "sources": [
+        "https://blog.cloudflare.com/introducing-web-search-api/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": false
+    },
+    {
+      "product": "AI Search",
+      "event": "GA",
+      "event_type": "ga",
+      "summary": "managed retrieval pipelineがGA。",
+      "enterprise_implication": "RAG基盤の構築・運用部品をCloudflareに集約できる。",
+      "use_cases": [
+        "社内検索",
+        "Web検索"
+      ],
+      "technical_implications": [
+        "managed ingestion/index/retrieval"
+      ],
+      "sources": [
+        "https://blog.cloudflare.com/ai-search-ga/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": false
+    },
+    {
+      "product": "Workers AI",
+      "event": "Clef / Clef-flash",
+      "event_type": "model_release",
+      "summary": "高速分類・Agent workflow向けdecision modelsを公開。",
+      "enterprise_implication": "routing/classificationを小型モデルに分離可能。",
+      "use_cases": [
+        "routing",
+        "classification"
+      ],
+      "technical_implications": [
+        "decision model + LLM tiering"
+      ],
+      "sources": [
+        "https://blog.cloudflare.com/clef-decision-models/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": false
+    },
+    {
+      "product": "Containers",
+      "event": "Agent sandbox improvements",
+      "event_type": "platform_feature",
+      "summary": "runtime resource selection、6倍超の起動高速化、filesystem snapshots public beta。",
+      "enterprise_implication": "task単位sandboxを構築しやすい。",
+      "use_cases": [
+        "coding agents",
+        "isolated execution"
+      ],
+      "technical_implications": [
+        "dynamic sandbox provisioning"
+      ],
+      "sources": [
+        "https://blog.cloudflare.com/faster-agent-sandboxes/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": false
+    },
+    {
+      "product": "Durable Objects",
+      "event": "Long-running I/O lifecycle improvement",
+      "event_type": "runtime_semantics",
+      "summary": "接続元が離れた後も未完了I/O等がある間、処理を継続しやすくなった。",
+      "enterprise_implication": "長時間Agent jobの信頼性向上。",
+      "use_cases": [
+        "非同期Agent"
+      ],
+      "technical_implications": [
+        "compatibility date 2026-10-01"
+      ],
+      "sources": [
+        "https://developers.cloudflare.com/changelog/product/durable-objects/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": true,
+      "why_overlooked": "runtime semanticsの小変更としてchangelogに掲載。",
+      "who_benefits": [
+        "Agent platform開発者"
+      ],
+      "practical_example": "接続終了後も長時間処理を完了して結果を保存する。"
+    },
+    {
+      "product": "Access",
+      "event": "Machine-to-machine authentication hardening",
+      "event_type": "security_control",
+      "summary": "service-token利用時の認証挙動を厳格化する設定が追加。",
+      "enterprise_implication": "human sessionとmachine identityを明確に分離できる。",
+      "use_cases": [
+        "Worker-to-API",
+        "Agent-to-internal-service"
+      ],
+      "technical_implications": [
+        "machine identity governance"
+      ],
+      "sources": [
+        "https://developers.cloudflare.com/changelog/product/access/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": true,
+      "why_overlooked": "認証設定の細かな変更。",
+      "who_benefits": [
+        "Platform Engineering",
+        "Security"
+      ],
+      "practical_example": "Agentから社内APIへのmachine-to-machine通信を人間向けlogin flowから分離する。"
+    }
+  ]
+}
