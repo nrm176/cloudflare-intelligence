@@ -1,0 +1,62 @@
+{
+  "id": "cloudflare-brief-2026-10-06",
+  "date": "2026-10-06",
+  "coverage_window": {
+    "start": "2026-10-05",
+    "end": "2026-10-06"
+  },
+  "language": "ja",
+  "source_count": 3,
+  "developments": [
+    {
+      "product": "Cloudflare WAF / Workers",
+      "event": "Workers subrequestを発信元zoneで制御するWAFパターンの明確化",
+      "event_type": "security_control",
+      "summary": "WAF Custom Rulesでcf.worker.upstream_zoneを使い、Workers subrequestを生成したzoneに基づいてblock/allowできる。CF-Worker headerはWAF評価時には利用できないため、このfieldを使用する。",
+      "enterprise_implication": "複数zoneやAgent/Worker間通信に対し、application認可に加えてedgeでcross-zone trafficを制限するdefense-in-depthを構築できる。",
+      "use_cases": [
+        "社内APIへのWorker発信元制限",
+        "cross-zone Worker traffic遮断",
+        "Agent tool endpointのedge policy"
+      ],
+      "technical_implications": [
+        "cf.worker.upstream_zoneをWAF pre-filterとして利用",
+        "Access/service identityと併用",
+        "application RBACと多層化",
+        "IaCによるzone allowlist管理"
+      ],
+      "sources": [
+        "https://developers.cloudflare.com/waf/custom-rules/use-cases/block-worker-subrequests/"
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": true,
+      "why_overlooked": "大型製品発表ではなくWAFのuse-case documentationとして更新されたため。",
+      "who_benefits": [
+        "Cloudflare platform team",
+        "Security Engineering",
+        "Zero Trust/IAM担当",
+        "SaaS platform team"
+      ],
+      "practical_example": "自社zone以外から生成されたWorker subrequestをWAFでblockし、直接visitor trafficは許可する。",
+      "fact_basis": "Cloudflare公式WAF documentation（2026-10-05更新）",
+      "analysis": "workload identityの代替ではないが、Worker/Agent間通信のeast-west securityを強化する有用な補助信号。"
+    }
+  ],
+  "no_major_new_release": true,
+  "duplicate_handling": "10月5日のBirthday Week wrap-upは既発表46件の総括であり、前回Briefで扱った主要項目を新規developmentとして重複登録していない。",
+  "sources": [
+    {
+      "title": "Block Worker subrequests from other zones",
+      "url": "https://developers.cloudflare.com/waf/custom-rules/use-cases/block-worker-subrequests/"
+    },
+    {
+      "title": "Everything we launched during Birthday Week 2026",
+      "url": "https://blog.cloudflare.com/birthday-week-2026-wrap-up/"
+    },
+    {
+      "title": "Cloudflare Blog",
+      "url": "https://blog.cloudflare.com/"
+    }
+  ]
+}
