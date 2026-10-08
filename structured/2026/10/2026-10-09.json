@@ -1,0 +1,144 @@
+{
+  "id": "cloudflare-brief-2026-10-09",
+  "date": "2026-10-09",
+  "coverage_window": {
+    "start": "2026-10-07",
+    "end": "2026-10-09T08:26:16+09:00",
+    "timezone": "Asia/Tokyo"
+  },
+  "generated_at": "2026-10-09T08:26:16+09:00",
+  "language": "ja",
+  "source_count": 3,
+  "products": [
+    "Workflows",
+    "Workers",
+    "Wrangler",
+    "Workers AI",
+    "D1",
+    "R2",
+    "Durable Objects",
+    "AI Search"
+  ],
+  "topics": [
+    "api-change",
+    "batch-processing",
+    "agentic-ai",
+    "enterprise-architecture",
+    "security-governance",
+    "under-the-radar"
+  ],
+  "summary": "Workflows createBatch() の新形式と、前回未収録の根拠追跡型Agent参照アーキテクチャを収録。",
+  "developments": [
+    {
+      "id": "cloudflare-2026-10-08-workflows-createbatch",
+      "product": "Cloudflare Workflows / Workers",
+      "event": "createBatch() のオブジェクト形式とインスタンス単位の結果報告",
+      "event_type": "api_update",
+      "date": "2026-10-08",
+      "summary": "Workflows の createBatch() が count または instances を指定するオブジェクト形式に対応。最大100インスタンスを一括作成でき、created と errors で作成結果と失敗を個別に確認できる。ローカル開発と wrangler types での型利用には Wrangler 4.148.0 以上が必要。従来の配列形式は非推奨だが動作は継続する。",
+      "source_supported_facts": [
+        "count は1〜100の整数で共通paramsを渡せる。instances は1〜100件の個別ID・paramsを渡せる。",
+        "既存IDの衝突は10405、同一バッチ内のID重複は10415としてerrorsに返る。",
+        "不正なIDやretentionなどの不正オプションは、インスタンス作成前に呼び出し全体をエラーにする。",
+        "既存配列形式は重複IDを黙って除外するため、移行時に返り値の扱いが変わる。"
+      ],
+      "enterprise_implication": "大量の定期バッチやAIエージェント実行をまとめて起動しながら、重複・部分失敗を可観測にできる。従来形式からの移行時には戻り値互換性の検証が必要。",
+      "use_cases": [
+        "毎朝の建設案件100件を案件ID付きWorkflowで起動し、重複分のみスキップ・記録する。",
+        "ニュース収集の対象ドメインごとに個別paramsを付与し、起動できなかったドメインを再試行キューへ送る。"
+      ],
+      "technical_implications": [
+        "Wrangler >= 4.148.0で型を生成する。",
+        "created/errorsを永続化し、errorsのcodeとindexを監視する。",
+        "重複エラーとバリデーション失敗を区別し、部分成功時の再試行は冪等性を設計する。"
+      ],
+      "analysis_or_inference": [
+        "インスタンスIDに業務キーを採用すると重複起動の検出に役立つが、業務側の冪等性を自動保証するものではない。"
+      ],
+      "sources": [
+        {
+          "title": "Create Workflow instance batches by count or list",
+          "url": "https://developers.cloudflare.com/changelog/post/2026-10-08-create-batch-object-form/",
+          "published_at": "2026-10-08",
+          "type": "official_changelog"
+        },
+        {
+          "title": "Workflows Workers API — createBatch",
+          "url": "https://developers.cloudflare.com/workflows/build/workers-api/#createbatch",
+          "published_at": null,
+          "type": "official_documentation"
+        }
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": true,
+      "why_overlooked": "モデルやGA発表ではなくWorkflows APIの小さなchangelogで、配列形式の非推奨とエラー意味論が見落とされやすい。",
+      "who_benefits": [
+        "社内DX開発者",
+        "Platform Engineering",
+        "SRE",
+        "データ基盤担当"
+      ],
+      "practical_example": "案件ごとのIDを付けて createBatch({instances:[...]}) を呼び、10405は既存実行として記録、その他のエラーだけ再試行候補にする。"
+    },
+    {
+      "id": "cloudflare-2026-10-07-evidence-grounded-security-agents",
+      "product": "Workers / Workflows / D1 / R2 / Durable Objects / Workers AI / AI Search",
+      "event": "Managed Defenseの根拠追跡型マルチエージェント設計を公開",
+      "event_type": "reference_architecture",
+      "date": "2026-10-07",
+      "summary": "CloudflareはManaged Defenseで、推論前に決定論的コードで顧客範囲と証拠を固定し、Clefによる一次トリアージ後、専門エージェントが並列分析する設計を公開。Workersで検証、Workflowsで段階実行、D1で調査状態、R2で証拠、Durable Objectsで会話状態、AI Searchで文脈補完を担う。",
+      "source_supported_facts": [
+        "最初の単一エージェント試作では根拠のない主張、調査範囲逸脱、未確認と該当なしの混同が課題となった。",
+        "推論前にversioned APIを使った証拠スナップショットを作り、各データの出典・版・時刻を保存する。",
+        "専門エージェントはtraffic、customer context、global telemetry、threat intelligenceを担当し、統合エージェントは承認済み語彙と証拠のみを利用する。",
+        "結果はNot checked、Checked with no matching result、Checked with evidence supporting absenceを区別し、証拠不十分なら分類や対応を提案しない。",
+        "モデルにはテナント境界を越える権限や分析者の代理実行権限を付与しない。"
+      ],
+      "enterprise_implication": "AIエージェントの品質をモデル性能だけに依存せず、データ取得の再現性、テナント分離、証拠参照、失敗の可視化で担保する実装例となる。",
+      "use_cases": [
+        "WAFやAccessのアラートを複数情報源と照合し、証拠付きでSOCに推奨対処を提示する。",
+        "社内案件の審査AgentでCRM・契約・外部情報を先に確定し、推論の入力差異を抑えて監査可能にする。"
+      ],
+      "technical_implications": [
+        "Identity/tenant scopeとデータ取得をWorkers側の決定論的コードに固定する。",
+        "Workflowsで段階ごとの成果物を保存し、D1/R2に証拠とprovenanceを残す。",
+        "モデルの引用先が実際の証拠パッケージに存在することをアプリ側で検証する。",
+        "不明・未確認・否定証拠を区別したenumで返す。"
+      ],
+      "analysis_or_inference": [
+        "これはCloudflare内部の実装事例であり、構成要素が単一の新製品としてGAになったことを意味しない。",
+        "建設不動産の法規判定や案件審査でも、先にデータを確定してから推論する設計が有効と考えられる。"
+      ],
+      "sources": [
+        {
+          "title": "Building an evidence-grounded agentic security operations harness on Cloudflare",
+          "url": "https://blog.cloudflare.com/agentic-security-operations/",
+          "published_at": "2026-10-07",
+          "type": "official_reference_architecture"
+        }
+      ],
+      "confidence": "high",
+      "language": "ja",
+      "under_the_radar": true,
+      "why_overlooked": "新製品発表ではなくManaged Defenseの技術解説に実装上の安全策が埋もれている。",
+      "who_benefits": [
+        "AI Platform",
+        "Security Engineering",
+        "社内DX",
+        "内部監査",
+        "SRE"
+      ],
+      "practical_example": "WAFアラート発生時にWorkerが対象zone・期間・ルール版を確定し、R2に証拠を保存。Agentは証拠ID付きの推奨のみを出し、WAFルール変更は人間が承認する。"
+    }
+  ],
+  "excluded_as_duplicates": [
+    "Organizations GA",
+    "Observability Logs統合",
+    "AI Gateway provider credential HTTP 401/code 2009",
+    "CASB Rego custom findings",
+    "Cloudflare One Client GA",
+    "WAF 2026-10-06"
+  ],
+  "methodology": "Cloudflare公式Changelog・ドキュメント・ブログを確認。source_supported_factsは一次情報に基づく記述、analysis_or_inferenceはモデルの分析。"
+}
